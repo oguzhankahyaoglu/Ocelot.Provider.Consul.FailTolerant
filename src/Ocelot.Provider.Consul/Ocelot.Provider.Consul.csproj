@@ -7,7 +7,7 @@
     <AssemblyTitle>Ocelot.Provider.Consul</AssemblyTitle>
     <VersionPrefix>18.1.0</VersionPrefix>
     <AssemblyName>Ocelot.Provider.Consul</AssemblyName>
-    <PackageId>Ocelot.Provider.Consul.FailTolerant</PackageId>
+    <PackageId>Ocelot.Provider.Consul.FaultTolerant</PackageId>
     <PackageTags>API Gateway;.NET core;Ocelot;Consul;Fail Tolerant</PackageTags>
     <PackageProjectUrl>https://github.com/ThreeMammals/Ocelot.Provider.Consul</PackageProjectUrl>
     <PackageProjectUrl>https://github.com/ThreeMammals/Ocelot.Provider.Consul</PackageProjectUrl>
