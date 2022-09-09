@@ -6,7 +6,7 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Description>Provides Ocelot extensions to use Consul with a Fail Tolerant approach.</Description>
     <AssemblyTitle>Ocelot.Provider.Consul</AssemblyTitle>
-    <VersionPrefix>18.1.2</VersionPrefix>
+    <VersionPrefix>18.2.0</VersionPrefix>
     <AssemblyName>Ocelot.Provider.Consul</AssemblyName>
     <PackageId>Ocelot.Provider.Consul.FaultTolerant</PackageId>
     <PackageTags>API Gateway;.NET core;Ocelot;Consul;Fail Tolerant</PackageTags>
@@ -18,7 +18,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Authors>Tom Pallister</Authors>
+    <Authors>oguzhankahyaoglu</Authors>
     <CodeAnalysisRuleSet>..\..\codeanalysis.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -26,7 +26,7 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\..\readme.md" Pack="true" PackagePath="\"/>
+    <None Include="..\..\readme.md" Pack="true" PackagePath="\" />
     <PackageReference Include="Consul" Version="0.7.2.6" />
     <PackageReference Include="Ocelot" Version="18.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2">

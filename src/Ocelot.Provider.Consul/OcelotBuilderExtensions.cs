@@ -25,7 +25,7 @@ namespace Ocelot.Provider.Consul
             services.AddHostedService<FileConfigurationPoller>();
 
             services.RemoveAll(typeof(IFileConfigurationRepository));
-            services.AddSingleton<IFileConfigurationRepository, ConsulFileConfigurationRepository>();
+            services.AddSingleton<IFileConfigurationRepository, ConsulConfigurationRepository>();
 
             services.RemoveAll(typeof(IFileConfigurationPollerOptions));
             services.AddTransient<IFileConfigurationPollerOptions, ConsulFileConfigurationPollerOptionExtended>();

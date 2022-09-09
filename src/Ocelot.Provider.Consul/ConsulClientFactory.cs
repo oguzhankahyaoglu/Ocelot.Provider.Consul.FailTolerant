@@ -9,7 +9,13 @@
         {
             return new ConsulClient(c =>
             {
-                c.Address = new Uri($"http://{config.Host}:{config.Port}");
+                var scheme = "http";
+                if (!string.IsNullOrEmpty(config.Scheme))
+                {
+                    scheme = config.Scheme;
+                }
+
+                c.Address = new Uri($"{scheme}://{config.Host}:{config.Port}");
 
                 if (!string.IsNullOrEmpty(config?.Token))
                 {

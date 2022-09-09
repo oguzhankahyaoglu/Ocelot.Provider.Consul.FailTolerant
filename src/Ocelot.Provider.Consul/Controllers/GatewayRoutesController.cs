@@ -39,9 +39,9 @@ public class GatewayRoutesController : ControllerBase
         return new
         {
             LastOcelotConfigFetchedSuccessfully =
-                ToHumanize(ConsulFileConfigurationRepository.LastOcelotConfigFetchedSuccessfully),
+                ToHumanize(ConsulConfigurationRepository.LastOcelotConfigFetchedSuccessfully),
             LastOcelotConfigFetchTried =
-                ToHumanize(ConsulFileConfigurationRepository.LastOcelotConfigFetchTried),
+                ToHumanize(ConsulConfigurationRepository.LastOcelotConfigFetchTried),
             FileConfig = fileConfigDtos,
             CurrentConfig = internalConfigDtos,
         };

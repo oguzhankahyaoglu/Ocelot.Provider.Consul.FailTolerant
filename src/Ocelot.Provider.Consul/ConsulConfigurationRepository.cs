@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Sockets;
 using Microsoft.Extensions.Options;
 using Ocelot.Cache;
 using Ocelot.Errors;
@@ -17,7 +18,7 @@ namespace Ocelot.Provider.Consul
     using Newtonsoft.Json;
     using Responses;
 
-    public class ConsulFileConfigurationRepository : IFileConfigurationRepository
+    public class ConsulConfigurationRepository : IFileConfigurationRepository
     {
         private readonly IConsulClient _consul;
         private readonly string _configurationKey;
@@ -26,13 +27,13 @@ namespace Ocelot.Provider.Consul
         public static DateTime? LastOcelotConfigFetchedSuccessfully { get; private set; }
         public static DateTime? LastOcelotConfigFetchTried { get; private set; }
 
-        public ConsulFileConfigurationRepository(
+        public ConsulConfigurationRepository(
             IOptions<FileConfiguration> fileConfiguration,
             IOcelotCache<FileConfiguration> cache,
             IConsulClientFactory factory,
             IOcelotLoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<ConsulFileConfigurationRepository>();
+            _logger = loggerFactory.CreateLogger<ConsulConfigurationRepository>();
             _cache = cache;
             var discoveryProvider =
                 fileConfiguration.Value.GlobalConfiguration.ServiceDiscoveryProvider;
@@ -69,9 +70,16 @@ namespace Ocelot.Provider.Consul
                 return new OkResponse<FileConfiguration>(
                     JsonConvert.DeserializeObject<FileConfiguration>(
                         Encoding.UTF8.GetString(queryResult.Response.Value)));
-
             }
             catch (HttpRequestException e)
+            {
+                _logger.LogError("Cannot fetch initial configuration from Consul.", e);
+                return new ErrorResponse<FileConfiguration>(new List<Error>
+                {
+                    new RequestCanceledError(e.Message)
+                });
+            }     
+            catch (SocketException e)
             {
                 _logger.LogError("Cannot fetch initial configuration from Consul.", e);
                 return new ErrorResponse<FileConfiguration>(new List<Error>

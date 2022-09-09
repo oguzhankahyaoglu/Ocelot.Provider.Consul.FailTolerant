@@ -24,7 +24,7 @@ namespace Ocelot.Provider.Consul.UnitTests
 
     public class ConsulFileConfigurationRepositoryTests
     {
-        private ConsulFileConfigurationRepository _repo;
+        private ConsulConfigurationRepository _repo;
         private Mock<IOcelotCache<FileConfiguration>> _cache;
         private Mock<IInternalConfigurationRepository> _internalRepo;
         private Mock<IConsulClientFactory> _factory;
@@ -57,7 +57,7 @@ namespace Ocelot.Provider.Consul.UnitTests
                 .Setup(x => x.Get())
                 .Returns(new OkResponse<IInternalConfiguration>(new InternalConfiguration(new List<Route>(), "", new ServiceProviderConfigurationBuilder().Build(), "", It.IsAny<LoadBalancerOptions>(), It.IsAny<string>(), It.IsAny<QoSOptions>(), It.IsAny<HttpHandlerOptions>(), It.IsAny<Version>())));
 
-            _repo = new ConsulFileConfigurationRepository(new Mock<IOptions<FileConfiguration>>().Object,
+            _repo = new ConsulConfigurationRepository(new Mock<IOptions<FileConfiguration>>().Object,
                 _cache.Object,  _factory.Object, _loggerFactory.Object);
         }
 
@@ -146,7 +146,7 @@ namespace Ocelot.Provider.Consul.UnitTests
                     new LoadBalancerOptionsBuilder().Build(), "", new QoSOptionsBuilder().Build(),
                     new HttpHandlerOptionsBuilder().Build(), new Version())));
 
-            _repo = new ConsulFileConfigurationRepository(new Mock<IOptions<FileConfiguration>>().Object, 
+            _repo = new ConsulConfigurationRepository(new Mock<IOptions<FileConfiguration>>().Object, 
                 _cache.Object,_factory.Object, _loggerFactory.Object);
         }
 

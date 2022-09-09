@@ -29,7 +29,7 @@
 
         private static bool UsingConsul(IFileConfigurationRepository fileConfigRepo)
         {
-            return fileConfigRepo.GetType() == typeof(ConsulFileConfigurationRepository);
+            return fileConfigRepo.GetType() == typeof(ConsulConfigurationRepository);
         }
 
         private static async Task SetFileConfigInConsul(IApplicationBuilder builder,
@@ -41,9 +41,11 @@
 
             if (IsError(fileConfigFromConsul))
             {
-                ThrowToStopOcelotStarting(fileConfigFromConsul);
+                // dont stop startup phase since it can use in memory routes read from config file.
+                return;
             }
-            else if (ConfigNotStoredInConsul(fileConfigFromConsul))
+
+            if (ConfigNotStoredInConsul(fileConfigFromConsul))
             {
                 //there was no config in consul set the file in config in consul
                 await fileConfigRepo.Set(fileConfig.CurrentValue);
