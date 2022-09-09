@@ -6,12 +6,12 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Description>Provides Ocelot extensions to use Consul with a Fail Tolerant approach.</Description>
     <AssemblyTitle>Ocelot.Provider.Consul</AssemblyTitle>
-    <VersionPrefix>18.1.1</VersionPrefix>
+    <VersionPrefix>18.1.2</VersionPrefix>
     <AssemblyName>Ocelot.Provider.Consul</AssemblyName>
     <PackageId>Ocelot.Provider.Consul.FaultTolerant</PackageId>
     <PackageTags>API Gateway;.NET core;Ocelot;Consul;Fail Tolerant</PackageTags>
-    <PackageProjectUrl>https://github.com/ThreeMammals/Ocelot.Provider.Consul</PackageProjectUrl>
-    <PackageProjectUrl>https://github.com/ThreeMammals/Ocelot.Provider.Consul</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/oguzhankahyaoglu/Ocelot.Provider.Consul.FaultTolerant</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/oguzhankahyaoglu/Ocelot.Provider.Consul.FaultTolerant</PackageProjectUrl>
     <PackageIconUrl>http://threemammals.com/images/ocelot_logo.png</PackageIconUrl>
     <RuntimeIdentifiers>win10-x64;osx.10.11-x64;osx.10.12-x64;win7-x64</RuntimeIdentifiers>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
