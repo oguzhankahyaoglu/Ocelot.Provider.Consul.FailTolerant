@@ -1,4 +1,6 @@
-﻿namespace Ocelot.Provider.Consul
+﻿using Ocelot.ServiceDiscovery.Providers;
+
+namespace Ocelot.Provider.Consul
 {
     using System.Threading.Tasks;
     using Logging;
@@ -8,13 +10,26 @@
 
     public static class ConsulProviderFactory
     {
-        public static ServiceDiscoveryFinderDelegate Get = (provider, config, name) =>
+        public static ServiceDiscoveryFinderDelegate Get = (provider, config, route) =>
         {
+            // IOcelotLoggerFactory service1 = provider.GetService<IOcelotLoggerFactory>();
+            // IConsulClientFactory service2 = provider.GetService<IConsulClientFactory>();
+            // Consul consulServiceDiscoveryProvider = 
+            //     new Consul(
+            //         new ConsulRegistryConfiguration(config.Scheme, config.Host, config.Port, route.ServiceName, config.Token), 
+            //         service1, service2);
+            // return config.Type?.ToLower() == "pollconsul" 
+            //     ? new PollConsul(config.PollingInterval, service1, 
+            //         consulServiceDiscoveryProvider) 
+            //     : consulServiceDiscoveryProvider;
+
+
             var factory = provider.GetService<IOcelotLoggerFactory>();
 
             var consulFactory = provider.GetService<IConsulClientFactory>();
 
-            var consulRegistryConfiguration = new ConsulRegistryConfiguration(config.Host, config.Port, name, config.Token);
+            var consulRegistryConfiguration = new ConsulRegistryConfiguration(config.Scheme, config.Host, config.Port,
+                route.ServiceName, config.Token);
 
             var consulServiceDiscoveryProvider = new Consul(consulRegistryConfiguration, factory, consulFactory);
 

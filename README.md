@@ -6,21 +6,30 @@ Windows (AppVeyor)
 
 [![Coverage Status](https://coveralls.io/repos/github/ThreeMammals/Ocelot.Provider.Consul/badge.svg)](https://coveralls.io/github/ThreeMammals/Ocelot.Provider.Consul)
 
-# Ocelot
+# Ocelot.Provider.Consul
 
 This package adds [Consul](https://www.consul.io/) support to Ocelot via the package [Consul.NET](https://github.com/PlayFab/consuldotnet).
 
+## What's Different from the Original "Ocelot.Provider.Consul" Package?
+- **The application crashes at startup time if cannot access to the specified Consul server!** In this package, this is fixed. The Ocelot gateway just startus up normally, uses the local appsettings/ocelot.json configuration file and starts trying to access Consul server using the specified PollingInterval (ms) value. Once it is accessed successfully, it now starts to use routes from Consul.
+- **PollingInterval** in local config file was not being used. The value (if specified) in Consul server was being used instead. This behaviour has been changed to use local configuration file usage. Thus, **PollingInterval** value is being used from the local config file.
+- After initial startup and successfully fetch of config from Consul, even after the Consul server is down, the Ocelot gateway is happy with the in-memory routes/configuration from latest fetch from Consul. Once the Consul server is up again, the config fill be tried to updated (since it might have been changed or not).
+
 ## How to install
 
-Ocelot is designed to work with ASP.NET Core only and it targets `netstandard2.0`. This means it can be used anywhere `.NET Standard 2.0` is supported, including `.NET Core 2.1` and `.NET Framework 4.7.2` and up. [This](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) documentation may prove helpful when working out if Ocelot would be suitable for you.
+Ocelot is designed to work with ASP.NET Core only and it targets `netstandard2.0`. 
+This means it can be used anywhere `.NET Standard 2.0` is supported, 
+including `.NET Core 2.1` and `.NET Framework 4.7.2` and up. 
+[This](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) documentation may prove 
+helpful when working out if Ocelot would be suitable for you.
 
 Install Ocelot and it's dependencies using NuGet. 
 
-`Install-Package Ocelot.Provider.Consul`
+`Install-Package Ocelot.Provider.Consul.FailTolerant`
 
 Or via the .NET Core CLI:
 
-`dotnet add package Ocelot.Provider.Consul`
+`dotnet add package Ocelot.Provider.Consul.FailTolerant`
 
 All versions can be found [here](https://www.nuget.org/packages/Ocelot.Provider.Consul/)
 

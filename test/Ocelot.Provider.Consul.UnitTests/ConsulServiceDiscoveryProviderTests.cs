@@ -43,7 +43,7 @@
             _logger = new Mock<IOcelotLogger>();
             _factory.Setup(x => x.CreateLogger<Consul>()).Returns(_logger.Object);
             _factory.Setup(x => x.CreateLogger<PollConsul>()).Returns(_logger.Object);
-            var config = new ConsulRegistryConfiguration(_consulHost, _port, _serviceName, null);
+            var config = new ConsulRegistryConfiguration("http", _consulHost, _port, _serviceName, null);
             _provider = new Consul(config, _factory.Object, _clientFactory);
         }
 
@@ -62,7 +62,8 @@
                 },
             };
 
-            this.Given(x => GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
+            this.Given(x =>
+                    GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
                 .And(x => GivenTheServicesAreRegisteredWithConsul(serviceEntryOne))
                 .When(x => WhenIGetTheServices())
                 .Then(x => ThenTheCountIs(1))
@@ -73,7 +74,7 @@
         public void should_use_token()
         {
             var token = "test token";
-            var config = new ConsulRegistryConfiguration(_consulHost, _port, _serviceName, token);
+            var config = new ConsulRegistryConfiguration("http", _consulHost, _port, _serviceName, token);
             _provider = new Consul(config, _factory.Object, _clientFactory);
 
             var serviceEntryOne = new ServiceEntry()
@@ -88,7 +89,8 @@
                 },
             };
 
-            this.Given(_ => GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
+            this.Given(_ =>
+                    GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
                 .And(_ => GivenTheServicesAreRegisteredWithConsul(serviceEntryOne))
                 .When(_ => WhenIGetTheServices())
                 .Then(_ => ThenTheCountIs(1))
@@ -123,7 +125,8 @@
                 },
             };
 
-            this.Given(x => GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
+            this.Given(x =>
+                    GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
                 .And(x => GivenTheServicesAreRegisteredWithConsul(serviceEntryOne, serviceEntryTwo))
                 .When(x => WhenIGetTheServices())
                 .Then(x => ThenTheCountIs(0))
@@ -158,7 +161,8 @@
                 },
             };
 
-            this.Given(x => GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
+            this.Given(x =>
+                    GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
                 .And(x => GivenTheServicesAreRegisteredWithConsul(serviceEntryOne, serviceEntryTwo))
                 .When(x => WhenIGetTheServices())
                 .Then(x => ThenTheCountIs(0))
@@ -193,7 +197,8 @@
                 },
             };
 
-            this.Given(x => GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
+            this.Given(x =>
+                    GivenThereIsAFakeConsulServiceDiscoveryProvider(_fakeConsulServiceDiscoveryUrl, _serviceName))
                 .And(x => GivenTheServicesAreRegisteredWithConsul(serviceEntryOne, serviceEntryTwo))
                 .When(x => WhenIGetTheServices())
                 .Then(x => ThenTheCountIs(0))

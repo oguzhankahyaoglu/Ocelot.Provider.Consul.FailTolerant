@@ -4,8 +4,8 @@
 
     public class UnableToSetConfigInConsulError : Error
     {
-        public UnableToSetConfigInConsulError(string s) 
-            : base(s, OcelotErrorCode.UnknownError)
+        public UnableToSetConfigInConsulError(string s, int statusCode) 
+            : base(s, OcelotErrorCode.UnknownError, statusCode)
         {
         }
     }

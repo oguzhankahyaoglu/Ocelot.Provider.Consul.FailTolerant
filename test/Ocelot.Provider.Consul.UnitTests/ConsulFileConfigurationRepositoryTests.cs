@@ -1,4 +1,7 @@
-﻿namespace Ocelot.Provider.Consul.UnitTests
+﻿using System;
+using Microsoft.Extensions.Options;
+
+namespace Ocelot.Provider.Consul.UnitTests
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -52,9 +55,10 @@
 
             _internalRepo
                 .Setup(x => x.Get())
-                .Returns(new OkResponse<IInternalConfiguration>(new InternalConfiguration(new List<ReRoute>(), "", new ServiceProviderConfigurationBuilder().Build(), "", It.IsAny<LoadBalancerOptions>(), It.IsAny<string>(), It.IsAny<QoSOptions>(), It.IsAny<HttpHandlerOptions>())));
+                .Returns(new OkResponse<IInternalConfiguration>(new InternalConfiguration(new List<Route>(), "", new ServiceProviderConfigurationBuilder().Build(), "", It.IsAny<LoadBalancerOptions>(), It.IsAny<string>(), It.IsAny<QoSOptions>(), It.IsAny<HttpHandlerOptions>(), It.IsAny<Version>())));
 
-            _repo = new ConsulFileConfigurationRepository(_cache.Object, _internalRepo.Object, _factory.Object, _loggerFactory.Object);
+            _repo = new ConsulFileConfigurationRepository(new Mock<IOptions<FileConfiguration>>().Object,
+                _cache.Object,  _factory.Object, _loggerFactory.Object);
         }
 
         [Fact]
@@ -137,12 +141,13 @@
         {
             _internalRepo
                 .Setup(x => x.Get())
-                .Returns(new OkResponse<IInternalConfiguration>(new InternalConfiguration(new List<ReRoute>(), "",
+                .Returns(new OkResponse<IInternalConfiguration>(new InternalConfiguration(new List<Route>(), "",
                     new ServiceProviderConfigurationBuilder().WithConfigurationKey(key).Build(), "",
                     new LoadBalancerOptionsBuilder().Build(), "", new QoSOptionsBuilder().Build(),
-                    new HttpHandlerOptionsBuilder().Build())));
+                    new HttpHandlerOptionsBuilder().Build(), new Version())));
 
-            _repo = new ConsulFileConfigurationRepository(_cache.Object, _internalRepo.Object, _factory.Object, _loggerFactory.Object);
+            _repo = new ConsulFileConfigurationRepository(new Mock<IOptions<FileConfiguration>>().Object, 
+                _cache.Object,_factory.Object, _loggerFactory.Object);
         }
 
         private void ThenTheConfigurationIsNull()
@@ -224,9 +229,9 @@
 
         private FileConfiguration FakeFileConfiguration()
         {
-            var reRoutes = new List<FileReRoute>
+            var Routes = new List<FileRoute>
             {
-                new FileReRoute
+                new FileRoute
                 {
                     DownstreamHostAndPorts = new List<FileHostAndPort>
                     {
@@ -253,7 +258,7 @@
             return new FileConfiguration
             {
                 GlobalConfiguration = globalConfiguration,
-                ReRoutes = reRoutes
+                Routes = Routes
             };
         }
     }

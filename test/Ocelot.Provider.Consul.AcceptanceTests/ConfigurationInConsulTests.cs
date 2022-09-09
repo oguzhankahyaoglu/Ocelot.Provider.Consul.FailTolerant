@@ -40,9 +40,9 @@ namespace Ocelot.Provider.Consul.AcceptanceTests
         {
             var configuration = new FileConfiguration
             {
-                ReRoutes = new List<FileReRoute>
+                Routes = new List<FileRoute>
                     {
-                        new FileReRoute
+                        new FileRoute
                         {
                             DownstreamPathTemplate = "/",
                             DownstreamScheme = "http",
@@ -101,9 +101,9 @@ namespace Ocelot.Provider.Consul.AcceptanceTests
 
             var consulConfig = new FileConfiguration
             {
-                ReRoutes = new List<FileReRoute>
+                Routes = new List<FileRoute>
                 {
-                    new FileReRoute
+                    new FileRoute
                     {
                         DownstreamPathTemplate = "/status",
                         DownstreamScheme = "http",
@@ -160,9 +160,9 @@ namespace Ocelot.Provider.Consul.AcceptanceTests
 
             var consulConfig = new FileConfiguration
             {
-                ReRoutes = new List<FileReRoute>
+                Routes = new List<FileRoute>
                 {
-                    new FileReRoute
+                    new FileRoute
                     {
                         DownstreamPathTemplate = "/status",
                         DownstreamScheme = "http",
@@ -190,9 +190,9 @@ namespace Ocelot.Provider.Consul.AcceptanceTests
 
             var secondConsulConfig = new FileConfiguration
             {
-                ReRoutes = new List<FileReRoute>
+                Routes = new List<FileRoute>
                 {
-                    new FileReRoute
+                    new FileRoute
                     {
                         DownstreamPathTemplate = "/status",
                         DownstreamScheme = "http",
@@ -253,9 +253,9 @@ namespace Ocelot.Provider.Consul.AcceptanceTests
 
             var consulConfig = new FileConfiguration
             {
-                DynamicReRoutes = new List<FileDynamicReRoute>
+                DynamicRoutes = new List<FileDynamicRoute>
                 {
-                    new FileDynamicReRoute
+                    new FileDynamicRoute
                     {
                         ServiceName = serviceName,
                         RateLimitRule = new FileRateLimitRule()

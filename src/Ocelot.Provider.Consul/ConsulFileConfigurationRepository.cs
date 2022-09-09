@@ -1,4 +1,11 @@
-﻿namespace Ocelot.Provider.Consul
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using Microsoft.Extensions.Options;
+using Ocelot.Cache;
+using Ocelot.Errors;
+using Ocelot.Requester;
+
+namespace Ocelot.Provider.Consul
 {
     using System;
     using System.Text;
@@ -14,83 +21,85 @@
     {
         private readonly IConsulClient _consul;
         private readonly string _configurationKey;
-        private readonly Cache.IOcelotCache<FileConfiguration> _cache;
+        private readonly IOcelotCache<FileConfiguration> _cache;
         private readonly IOcelotLogger _logger;
+        public static DateTime? LastOcelotConfigFetchedSuccessfully { get; private set; }
+        public static DateTime? LastOcelotConfigFetchTried { get; private set; }
 
         public ConsulFileConfigurationRepository(
-            Cache.IOcelotCache<FileConfiguration> cache,
-            IInternalConfigurationRepository repo,
+            IOptions<FileConfiguration> fileConfiguration,
+            IOcelotCache<FileConfiguration> cache,
             IConsulClientFactory factory,
             IOcelotLoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<ConsulFileConfigurationRepository>();
             _cache = cache;
-
-            var internalConfig = repo.Get();
-
-            _configurationKey = "InternalConfiguration";
-
-            string token = null;
-
-            if (!internalConfig.IsError)
-            {
-                token = internalConfig.Data.ServiceProviderConfiguration.Token;
-                _configurationKey = !string.IsNullOrEmpty(internalConfig.Data.ServiceProviderConfiguration.ConfigurationKey) ?
-                    internalConfig.Data.ServiceProviderConfiguration.ConfigurationKey : _configurationKey;
-            }
-
-            var config = new ConsulRegistryConfiguration(internalConfig.Data.ServiceProviderConfiguration.Host,
-                internalConfig.Data.ServiceProviderConfiguration.Port, _configurationKey, token);
-
+            var discoveryProvider =
+                fileConfiguration.Value.GlobalConfiguration.ServiceDiscoveryProvider;
+            _configurationKey = string.IsNullOrWhiteSpace(discoveryProvider.ConfigurationKey)
+                ? "InternalConfiguration"
+                : discoveryProvider.ConfigurationKey;
+            var config = new ConsulRegistryConfiguration(discoveryProvider.Scheme,
+                discoveryProvider.Host, discoveryProvider.Port, _configurationKey, discoveryProvider.Token);
             _consul = factory.Get(config);
         }
 
         public async Task<Response<FileConfiguration>> Get()
         {
-            var config = _cache.Get(_configurationKey, _configurationKey);
-
-            if (config != null)
+            var data = _cache.Get(_configurationKey, _configurationKey);
+            if (data != null)
             {
-                return new OkResponse<FileConfiguration>(config);
+                return new OkResponse<FileConfiguration>(data);
             }
 
-            var queryResult = await _consul.KV.Get(_configurationKey);
-
-            if (queryResult.Response == null)
+            try
             {
-                return new OkResponse<FileConfiguration>(null);
+                LastOcelotConfigFetchTried = DateTime.Now;
+                var queryResult = await _consul.KV.Get(_configurationKey);
+                if (queryResult.Response == null)
+                {
+                    return new ErrorResponse<FileConfiguration>(new List<Error>
+                    {
+                        new RequestCanceledError(
+                            $"Cannot get consul config successfully,statusCode:{queryResult.StatusCode}")
+                    });
+                }
+
+                LastOcelotConfigFetchedSuccessfully = DateTime.Now;
+                return new OkResponse<FileConfiguration>(
+                    JsonConvert.DeserializeObject<FileConfiguration>(
+                        Encoding.UTF8.GetString(queryResult.Response.Value)));
+
             }
-
-            var bytes = queryResult.Response.Value;
-
-            var json = Encoding.UTF8.GetString(bytes);
-
-            var consulConfig = JsonConvert.DeserializeObject<FileConfiguration>(json);
-
-            return new OkResponse<FileConfiguration>(consulConfig);
+            catch (HttpRequestException e)
+            {
+                _logger.LogError("Cannot fetch initial configuration from Consul.", e);
+                return new ErrorResponse<FileConfiguration>(new List<Error>
+                {
+                    new RequestCanceledError(e.Message)
+                });
+            }
         }
 
         public async Task<Response> Set(FileConfiguration ocelotConfiguration)
         {
-            var json = JsonConvert.SerializeObject(ocelotConfiguration, Formatting.Indented);
-
-            var bytes = Encoding.UTF8.GetBytes(json);
-
-            var kvPair = new KVPair(_configurationKey)
+            var bytes =
+                Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(ocelotConfiguration, Formatting.Indented));
+            var writeResult = await _consul.KV.Put(new KVPair(_configurationKey)
             {
                 Value = bytes
-            };
-
-            var result = await _consul.KV.Put(kvPair);
-
-            if (result.Response)
+            });
+            if (writeResult.Response)
             {
-                _cache.AddAndDelete(_configurationKey, ocelotConfiguration, TimeSpan.FromSeconds(3), _configurationKey);
-
+                _cache.AddAndDelete(_configurationKey, ocelotConfiguration, TimeSpan.FromSeconds(3.0),
+                    _configurationKey);
                 return new OkResponse();
             }
 
-            return new ErrorResponse(new UnableToSetConfigInConsulError($"Unable to set FileConfiguration in consul, response status code from consul was {result.StatusCode}"));
+            var interpolatedStringHandler =
+                $"Unable to set FileConfiguration in consul, response status code from consul was {writeResult.StatusCode}";
+            return new ErrorResponse(
+                new UnableToSetConfigInConsulError(interpolatedStringHandler, (int)writeResult.StatusCode));
         }
     }
 }

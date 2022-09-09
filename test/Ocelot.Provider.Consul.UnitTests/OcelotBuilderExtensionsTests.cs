@@ -23,7 +23,6 @@
         {
             _configRoot = new ConfigurationRoot(new List<IConfigurationProvider>());
             _services = new ServiceCollection();
-            _services.AddSingleton<IHostingEnvironment, HostingEnvironment>();
             _services.AddSingleton(_configRoot);
         }
 

@@ -1,4 +1,6 @@
-﻿namespace Ocelot.Provider.Consul.UnitTests
+﻿using Newtonsoft.Json;
+
+namespace Ocelot.Provider.Consul.UnitTests
 {
     using System;
     using Configuration;
@@ -28,7 +30,8 @@
         [Fact]
         public void should_return_ConsulServiceDiscoveryProvider()
         {
-            var provider = ConsulProviderFactory.Get(_provider, new ServiceProviderConfiguration("", "", 1, "", "", 1), "");
+            var provider = ConsulProviderFactory.Get(_provider, new ServiceProviderConfiguration("", "","", 1, "", "", 1), 
+                JsonConvert.DeserializeObject<DownstreamRoute>("{}"));
             provider.ShouldBeOfType<Consul>();
         }
 
@@ -36,7 +39,9 @@
         public void should_return_PollingConsulServiceDiscoveryProvider()
         {
             var stopsPollerFromPolling = 10000;
-            var provider = ConsulProviderFactory.Get(_provider, new ServiceProviderConfiguration("pollconsul", "", 1, "", "", stopsPollerFromPolling), "");
+            var provider = ConsulProviderFactory.Get(_provider, 
+                new ServiceProviderConfiguration("pollconsul", "","", 1, "", "", stopsPollerFromPolling), 
+                JsonConvert.DeserializeObject<DownstreamRoute>("{}"));
             provider.ShouldBeOfType<PollConsul>();
         }
     }
